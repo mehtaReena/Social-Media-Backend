@@ -126,19 +126,19 @@ const createUser = async ({ username, email, password,photoUrl}) => {
     const unfollowUser = async (currentUsername, targetUsername) => {
         let currentUser = await User.findOne({ username: currentUsername })
         if (!currentUser) {
-            return { status: false, result: { message: "Current user is not found" } }
+            return { status: false, result:  "Current user is not found" }
         }
         let targetUser = await User.findOne({ username: targetUsername })
         if (!targetUser) {
-            return { status: false, result: { message: "There is no such user" } }
-        }
+            return { status: false, result: "There is no such user" }
+                }
         if (!currentUser.following.includes(targetUser._id)) {
             return { status: false, result: { message: "You are not following " + targetUsername + ". Follow first before unfollowing." } }
         }
         try {
             await User.updateOne({ username: currentUsername }, { $pull: { following: targetUser._id } })
             await User.updateOne({ username: targetUsername }, { $pull: { followers: currentUser._id } })
-            return { status: true, result: { message: "You unfollowed " + targetUsername } }
+            return { status: true, result:   "You unfollowed " + targetUsername  }
         }
         catch (e) {
             console.log(e)
@@ -146,31 +146,6 @@ const createUser = async ({ username, email, password,photoUrl}) => {
         }
     }
 
-    const blockUser = async (currentUsername, targetUsername) => {
-        let currentUser = await User.findOne({ username: currentUsername })
-        if (!currentUser) {
-            return { status: false, result: { message: "Current user is not found" } }
-        }
-        let targetUser = await User.findOne({ username: targetUsername })
-        if (!targetUser) {
-            return { status: false, result: { message: "There is no such user" } }
-        }
-        if (currentUser.followers.includes(targetUser._id)) {
-            try {
-                await User.updateOne({ username: currentUsername }, { $pull: { follower: targetUser._id } })
-                await User.updateOne({ username: targetUsername }, { $pull: { following: currentUser._id } })
-                return { status: true, result: { message: targetUsername + ' is not following you anymore' } }
-            }
-            catch (e) {
-                console.log(e)
-                return { status: false, result: { message: e.message } }
-            }
-        }
-        else {
-            return { status: true, result: { message: "Nothing happened" } }
-        }
-
-    }
 
     const getFollowers = async (username) => {
         let user = await User.findOne({ username })
@@ -178,7 +153,7 @@ const createUser = async ({ username, email, password,photoUrl}) => {
             return { status: true, result: user.followers }
         }
         else {
-            return { status: false, result: { message: "User not found" } }
+            return { status: false, result: "User not found"  }
         }
     }
 
@@ -188,7 +163,7 @@ const createUser = async ({ username, email, password,photoUrl}) => {
             return { status: true, result: user.following }
         }
         else {
-            return { status: false, result: { message: "User not found" } }
+            return { status: false, result: "User not found"  }
         }
     }
 
@@ -203,7 +178,7 @@ const createUser = async ({ username, email, password,photoUrl}) => {
             return { status: true, result: users }
         }
         else {
-            return { status: false, result: { message: "User not found" } }
+            return { status: false, result:  "User not found"  }
         }
     }
 
@@ -218,7 +193,6 @@ const createUser = async ({ username, email, password,photoUrl}) => {
         validateRefresh,
         followUser,
         unfollowUser,
-        blockUser,
         getFollowers,
         getFollowing,
         getUsers

@@ -6,7 +6,6 @@ const User = require("../models/user")
 const createPost = async (username, body) => {
     let user = await User.findOne({ username })
 
-
     let author = user._id;
     console.log("content " ,body.content)
 
