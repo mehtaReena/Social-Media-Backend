@@ -1,20 +1,39 @@
 const express = require("express")
 const userController = require("../controllers/userController")
 const jwt = require("jsonwebtoken")
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'images/uploads/')
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname)
+    }
+})
+const multipart = multer({ storage: storage })
 
 const router = express.Router()
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", multipart.single('profilePic'),async (req, res) => {
+    if(req.file){
+        req.body.photoUrl = req.file.path
+
+    }
+
+    console.log(req.body)
     let result = await userController.createUser(req.body)
     if (result.status) {
-        res.status(201).send(result.result)
+        res.status(201).json(result.result)
     }
     else {
-        res.status(401).send(result.result)
+        console.log("Sign-Up" , result)
+        res.status(401).json(result.result)
     }
 })
 
 router.post("/signin", async (req, res) => {
+    console.log(" Signin :" , req.body)
     let result = await userController.validateUser(req.body)
     if (result.status) {
         let payload = {
@@ -27,13 +46,14 @@ router.post("/signin", async (req, res) => {
         res.status(201).send({ access_token, refresh_token })
     }
     else {
-        console.log(result.result)
-        res.status(401).send(result.result)
+        console.log("Sign in auth .." ,result.result)
+        res.status(401).json(result.result)
     }
 })
 
 router.post("/signout", async (req, res) => {
     let header = req.headers["authorization"]
+
     if (!header) {
         res.status(403).send({ message: "Need authorization header" })
     }
@@ -41,6 +61,8 @@ router.post("/signout", async (req, res) => {
     try {
         let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
         let result = await userController.removeRefresh(user.username)
+        console.log("signOut" ,result)
+
         if (result.status) {
             res.status(200).send(result.result)
         }
@@ -49,25 +71,31 @@ router.post("/signout", async (req, res) => {
         }
     }
     catch (e) {
+        console.log(e.message)
         res.status(403).send({ message: "Inavalid access token" })
     }
 })
 
 router.post("/token", async (req, res) => {
     let { refresh_token } = req.body
+    // console.log("Token " , refresh_token , req.body )
     try {
         let user = jwt.verify(refresh_token, process.env.REFRESH_TOKEN_SECRET)
+    // console.log("Token user " , user )
+
         let result = await userController.validateRefresh(user.username, refresh_token)
         if (result.status) {
-            let access_token = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRE })
+            // console.log(result)
+            let access_token = jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRE_TIME })
             res.status(200).send({ access_token })
         }
         else {
-            res.status(403).send({ message: "Invalid refresh token" })
+            res.status(403).send({ result: "Invalid refresh token" })
         }
     }
     catch (e) {
-        res.status(403).send({ message: "Inavalid refresh token" })
+        console.log(e.message)
+        res.status(403).send({ result: "Inavalid refresh token" })
     }
 })
 

@@ -25,10 +25,12 @@ const UserSchema = new mongoose.Schema({
         ref: "User",
         default: []
     },
+    photoUrl: {
+        type: String
+    },
     refresh_token: {
         type: String,
         // unique: true
-        default:null
     }
 })
 

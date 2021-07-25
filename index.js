@@ -3,6 +3,7 @@ const express = require("express")
 const mongoose = require("mongoose")
 const morgan = require("morgan")
 const authRouter = require("./routes/auth")
+const postRouter = require("./routes/post")
 const cors = require('cors')
 
 const userController = require("./controllers/userController")
@@ -42,9 +43,10 @@ let verifyToken = async (req, res, next) => {
 }
 
 app.use("/auth", authRouter)
-// app.use("/posts", verifyToken, postRouter)
+ app.use("/posts", verifyToken, postRouter)
 
-app.get('/followers', verifyToken, async (req, res) => {
+
+ app.get('/followers', verifyToken, async (req, res) => {
     let header = req.headers["authorization"]
     let access_token = header.split(" ")[1]
     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
@@ -76,10 +78,13 @@ app.post('/follow/:username', verifyToken, async (req, res) => {
     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
     let result = await userController.followUser(user.username, req.params.username)
     if (result.status) {
-        res.status(201).send(result.result)
+        console.log(result.result)
+        res.status(201).json(result.result)
+
     }
     else {
-        res.status(401).send(result.result)
+        console.log(result.result)
+        res.status(401).json(result.result)
     }
 })
 
@@ -103,11 +108,28 @@ app.post('/block/:username', verifyToken, async (req, res) => {
     let result = await userController.blockUser(user.username, req.params.username)
     if (result.status) {
         res.status(201).send(result.result)
+
     }
     else {
         res.status(401).send(result.result)
     }
 })
+
+
+app.get('/users',async (req, res) => {
+     let header = req.headers["authorization"]
+    let access_token = header.split(" ")[1]
+    let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
+    let result = await userController.getUsers(user.username)
+    if (result.status) {
+        res.status(200).send(result.result)
+    }
+    else {
+        res.status(401).send(result.result)
+    }
+})
+
+
 
 app.get("/", (req, res) => {
     res.send("welcome")
