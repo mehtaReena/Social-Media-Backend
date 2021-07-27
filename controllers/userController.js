@@ -1,9 +1,9 @@
 const User = require("../models/user")
 const bcrypt = require("bcrypt")
 
-const defaultPic = '/images/user.jpg'
+const defaultPic = '/user.jpg'
 
-const createUser = async ({ username, email, password,photoUrl}) => {
+const createUser = async ({ name, username, email, password,photoUrl}) => {
     console.log(username,email,password)
     const userExists = await User.findOne({ email });
     const userNameExists = await User.findOne({ username });
@@ -11,7 +11,7 @@ const createUser = async ({ username, email, password,photoUrl}) => {
         return { status: false, result: "Account already exist!" };
     }
     else {
-        if (!username || !email || !password) {
+        if (!name||!username || !email || !password) {
             return { status: false, result: "Incomplete details" }
         }
         let emailRegex = /.+@.+[.].+/
@@ -20,10 +20,10 @@ const createUser = async ({ username, email, password,photoUrl}) => {
         }
 
         if (!photoUrl || !photoUrl.length) {
-            photoUrl = 'images/default.png'
+            photoUrl = defaultPic
         }
         let hash = await bcrypt.hash(password, 10)
-        let newUser = new User({ username, email, password: hash ,photoUrl})
+        let newUser = new User({name,username, email, password: hash ,photoUrl})
         try {
             let savedUser = await newUser.save()
             return { status: true, result: savedUser }

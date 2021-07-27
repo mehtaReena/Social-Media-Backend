@@ -7,11 +7,14 @@ const postRouter = require("./routes/post")
 const cors = require('cors')
 
 const userController = require("./controllers/userController")
+const postController = require("./controllers/postController")
 
 const jwt = require("jsonwebtoken")
 
 const app = express();
 // console.log(process.env.NAME)
+
+app.use(express.static(__dirname + '/public/images/'));
 
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -123,6 +126,22 @@ app.get('/users',async (req, res) => {
     let result = await userController.getUsers(user.username)
     if (result.status) {
         res.status(200).send(result.result)
+    }
+    else {
+        res.status(401).send(result.result)
+    }
+})
+
+
+
+app.get("/topfeeds", async (req, res) => {
+     let header = req.headers["authorization"]
+     let access_token = header.split(" ")[1]
+     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
+    let result = await postController.getTop20Post(user.username)
+    if (result.status) {
+        //   console.log ("RESULT :" ,result.result)
+        res.status(201).send(result.result)
     }
     else {
         res.status(401).send(result.result)

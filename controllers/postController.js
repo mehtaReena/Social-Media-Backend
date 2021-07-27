@@ -7,10 +7,10 @@ const createPost = async (username, body) => {
     let user = await User.findOne({ username })
 
     let author = user._id;
-    console.log("content " ,body.content)
+    console.log("content ", body.content)
 
-    let newPost = new Post({content:body.content, author:author})
-    console.log("New Post :" ,newPost)
+    let newPost = new Post({ content: body.content, author: author })
+    console.log("New Post :", newPost)
     try {
         let savedPost = await newPost.save()
         return { status: true, result: savedPost }
@@ -52,14 +52,76 @@ const deletePost = async (username, postId) => {
 
 const getPosts = async (username) => {
     let user = await User.findOne({ username })
-    let posts = await Post.find({author: user._id}).populate("author")
-    console.log("getPost..." ,posts)
+    let posts = await Post.find({ author: user._id }).populate("author")
+    console.log("getPost...", posts)
     return { status: true, result: posts }
 }
+
+
+const getTop20Post = async (username) => {
+    let topPost = [];
+    let user = await User.findOne({ username })
+    try {
+
+        const followingsId = user.following;
+        followingsId.push(user._id)
+        console.log("getTop20Post", followingsId)
+
+        // let userID = mongoose.mongo.ObjectID(id)
+        let posts = await Post.find().populate("author").sort({ "createdAt": -1 })
+        for (let post of posts) {
+            if (followingsId.includes(post.author._id)) {
+                //    console.log(" getTop20Post" , post)
+                if (topPost.length < 3)
+                    topPost.push(post)
+            }
+        }
+
+        if (!topPost) {
+            return { status: false, result: { message: "Invalid post id" } }
+        }
+        else {
+            console.log(" getTop20Post", topPost.length)
+            return { status: true, result: topPost }
+        }
+    }
+    catch (e) {
+        return (e.message);
+    }
+}
+
+
+const addLike = async (username, postID) => {
+    let user = await User.findOne({ username })
+
+    let userID = user._id;
+    console.log (userID , "ANd .." , postID )
+    try {
+        let hasLiked = await Post.findOne({ _id: postID, likes: { "$in": userID } });
+        console.log("hasLiked " , hasLiked)
+        if (hasLiked) {
+            await Post.findByIdAndUpdate(postID, { $pull: { likes: userID } });
+            return { status: true, result: "disliked" }
+        }
+        await Post.findByIdAndUpdate(postID, { $push: { likes: userID } });
+        return { status: true, result: "liked" }
+
+    }
+    catch (e) {
+        return { status: false, result: e.message }
+    }
+}
+
+
+
+
+
 
 module.exports = {
     createPost,
     getPost,
     deletePost,
-    getPosts
+    getPosts,
+    getTop20Post,
+    addLike
 }

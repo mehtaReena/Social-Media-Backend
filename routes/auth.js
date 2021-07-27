@@ -5,7 +5,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'images/uploads/')
+        cb(null, 'public/images/')
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + "-" + file.originalname)
@@ -17,6 +17,7 @@ const router = express.Router()
 
 router.post("/signup", multipart.single('profilePic'),async (req, res) => {
     if(req.file){
+        console.log(req.file.path)
         req.body.photoUrl = req.file.path
 
     }

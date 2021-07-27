@@ -62,6 +62,23 @@ router.delete("/:id", async (req, res) => {
     }
 })
 
+router.patch("/:id", async (req, res) => {
+    let header = req.headers["authorization"]
+    let access_token = header.split(" ")[1]
+    let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
+    let result = await postController.addLike(user.username ,req.params.id);
+    console.log(result.result)
+    if (result.status) {
+        res.status(201).send(result.result);
+    } else {
+        res.status(401).send(result.result);
+    }
+})
+
+
+
+
+
 
 
 module.exports = router
