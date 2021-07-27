@@ -51,6 +51,7 @@ const deletePost = async (username, postId) => {
 }
 
 const getPosts = async (username) => {
+    console.log(" getPosts .." , username)
     let user = await User.findOne({ username })
     let posts = await Post.find({ author: user._id }).populate("author")
     console.log("getPost...", posts)

@@ -36,10 +36,21 @@ router.post("/", async (req, res) => {
 })
 
 router.get("/:id", async (req, res) => {
+
     let header = req.headers["authorization"]
     let access_token = header.split(" ")[1]
+
+    let result = null
     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
-    let result = await postController.getPost(user.username, req.params.id)
+    if(!req.params.id){
+        console.log( " logged in user..")
+        result = await postController.getPosts( user.username)
+    }
+    else{
+      result = await postController.getPosts(req.params.id)
+    }
+
+
     if (result.status) {
         res.status(201).send(result.result)
     }

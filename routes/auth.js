@@ -36,6 +36,8 @@ router.post("/signup", multipart.single('profilePic'),async (req, res) => {
 router.post("/signin", async (req, res) => {
     console.log(" Signin :" , req.body)
     let result = await userController.validateUser(req.body)
+    let user=result.result.username;
+    console.log("username" , user)
     if (result.status) {
         let payload = {
             username: result.result.username
@@ -44,7 +46,7 @@ router.post("/signin", async (req, res) => {
         let refresh_token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRE_TIME })
         let resp= await userController.addRefresh(result.result.username, refresh_token)
         console.log(resp.status ,resp.result, access_token, refresh_token)
-        res.status(201).send({ access_token, refresh_token })
+        res.status(201).send({ access_token, refresh_token ,user})
     }
     else {
         console.log("Sign in auth .." ,result.result)
