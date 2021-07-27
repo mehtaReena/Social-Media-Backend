@@ -157,8 +157,9 @@ const createUser = async ({ name, username, email, password,photoUrl}) => {
         }
     }
 
-    const getFollowing = async () => {
+    const getFollowing = async (username) => {
         let user = await User.findOne({ username })
+        // console.log("getFollowing" ,user)
         if (user) {
             return { status: true, result: user.following }
         }
@@ -182,6 +183,18 @@ const createUser = async ({ name, username, email, password,photoUrl}) => {
         }
     }
 
+    const getUser = async (username) => {
+        let user = await User.findOne({ username })
+
+        console.log(" list " , user)
+        if (user) {
+            return { status: true, result: user }
+        }
+        else {
+            return { status: false, result:  "User not found"  }
+        }
+    }
+
 
 
 
@@ -195,5 +208,6 @@ const createUser = async ({ name, username, email, password,photoUrl}) => {
         unfollowUser,
         getFollowers,
         getFollowing,
-        getUsers
+        getUsers,
+        getUser
     }

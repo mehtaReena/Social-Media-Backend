@@ -67,6 +67,7 @@ app.get('/following', verifyToken, async (req, res) => {
     let access_token = header.split(" ")[1]
     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
     let result = await userController.getFollowing(user.username)
+    // console.log(" getFollowing ..", result.result)
     if (result.status) {
         res.status(200).send(result.result)
     }
@@ -130,6 +131,20 @@ app.get('/users',async (req, res) => {
     else {
         res.status(401).send(result.result)
     }
+})
+
+
+app.get('/user/:id',async (req, res) => {
+    let header = req.headers["authorization"]
+   let access_token = header.split(" ")[1]
+   let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
+   let result = await userController.getUser(req.params.id)
+   if (result.status) {
+       res.status(200).send(result.result)
+   }
+   else {
+       res.status(401).send(result.result)
+   }
 })
 
 
