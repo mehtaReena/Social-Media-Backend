@@ -134,16 +134,16 @@ app.get('/users',async (req, res) => {
 })
 
 
-app.get('/user/:id',async (req, res) => {
+app.get('/user/:id',verifyToken,async (req, res) => {
     let header = req.headers["authorization"]
    let access_token = header.split(" ")[1]
    let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
    let result = await userController.getUser(req.params.id)
    if (result.status) {
-       res.status(200).send(result.result)
+       res.status(200).json(result.result)
    }
    else {
-       res.status(401).send(result.result)
+       res.status(401).json(result.result)
    }
 })
 
