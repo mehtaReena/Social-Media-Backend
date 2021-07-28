@@ -140,7 +140,7 @@ app.get('/user/:id',async (req, res) => {
    let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
    let result = await userController.getUser(req.params.id)
    if (result.status) {
-       res.status(200).json(result.resul
+       res.status(200).json(result.result)
    }
    else {
        res.status(401).json(result.result)
