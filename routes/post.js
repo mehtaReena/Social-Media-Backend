@@ -65,6 +65,7 @@ router.delete("/:id", async (req, res) => {
     let access_token = header.split(" ")[1]
     let user = jwt.verify(access_token, process.env.ACCESS_TOKEN_SECRET)
     let result = await postController.deletePost(user.username, req.params.id)
+    console.log("delete Post" ,result.result)
     if (result.status) {
         res.status(201).send(result.result)
     }

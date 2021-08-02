@@ -39,14 +39,14 @@ const deletePost = async (username, postId) => {
     let id = mongoose.mongo.ObjectID(postId)
     let post = await Post.findOne({ _id: id }).populate("author")
     if (!post) {
-        return { status: false, result: { message: "Invalid post id" } }
+        return { status: false, result: "Invalid post id" }
     }
     if (post.author.username === username) {
         await Post.deleteOne(post)
         return { status: true, result: "Deleted Successfully" }
     }
     else {
-        return { status: false, result: { message: "Access denied" } }
+        return { status: false, result:  "Access denied" }
     }
 }
 
