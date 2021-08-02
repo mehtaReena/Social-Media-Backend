@@ -14,7 +14,9 @@ const jwt = require("jsonwebtoken")
 const app = express();
 // console.log(process.env.NAME)
 
- app.use(express.static(__dirname + '/public/images/'));
+//  app.use(express.static(__dirname + '/public/images/'));
+
+app.use(express.static(path_join(__dirname, '../public/images/')));
 
 
 
