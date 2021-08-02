@@ -1,5 +1,4 @@
 require("dotenv").config();
-const path = require('path');
 const express = require("express")
 const mongoose = require("mongoose")
 const morgan = require("morgan")
@@ -15,9 +14,7 @@ const jwt = require("jsonwebtoken")
 const app = express();
 // console.log(process.env.NAME)
 
-//  app.use(express.static(__dirname + '/public/images/'));
-
-app.use(express.static(path.join(__dirname, '../public/images/')));
+ app.use(express.static(__dirname + '/public/images/'));
 
 
 
