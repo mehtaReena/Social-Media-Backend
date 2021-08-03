@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express")
 const mongoose = require("mongoose")
 const morgan = require("morgan")
+const path = require('path');
 const authRouter = require("./routes/auth")
 const postRouter = require("./routes/post")
 const cors = require('cors')
@@ -14,7 +15,8 @@ const jwt = require("jsonwebtoken")
 const app = express();
 // console.log(process.env.NAME)
 
-app.use(express.static(__dirname + '/public/images/'));
+// app.use(express.static(__dirname + '/public/images/'));
+app.use(express.static(path.join(__dirname, '../public/images/')));
 
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
